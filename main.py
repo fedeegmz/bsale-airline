@@ -35,7 +35,7 @@ async def root():
 @app.get(
     path = "/flights/{flight_id}/passengers",
     status_code = status.HTTP_200_OK,
-    # response_model = ResponseModel,
+    response_model = ResponseModel,
     summary = "Returns the check-in data",
     tags = ["check-in"]
 )
@@ -220,7 +220,6 @@ async def check_in(
             status_code = status.HTTP_404_NOT_FOUND,
             detail = {
                 "code": 404,
-                "data": {},
-                "errors": str(err)
+                "data": {}
             }
         )
