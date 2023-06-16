@@ -359,3 +359,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,macos,python,venv,images,git,visualstudiocode
+.space
+Spacefile
