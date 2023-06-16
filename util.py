@@ -368,4 +368,43 @@ def search_group_of_empty_seats(seat_type: int, airplane: list[SeatData]):
     return data
 
 def order_ready_accounts(accounts: list[AccountData]):
-    pass
+    """
+    Ordena los pasajeros por asiento.  
+    - Param:  
+        - accounts: list[AccountData]  
+    - Return:  
+        - list[AccountData]
+    """
+    if len(accounts) > 1:
+        half = len(accounts) // 2
+        left = accounts[:half]
+        right = accounts[half:]
+
+        order_ready_accounts(left)
+        order_ready_accounts(right)
+
+        i = 0
+        j = 0
+        k = 0
+
+        while i < len(left) and j < len(right):
+            if left[i].seatId < right[j].seatId:
+                accounts[k] = left[i]
+                i += 1
+            else:
+                accounts[k] = right[j]
+                j += 1
+            
+            k += 1
+        
+        while i < len(left):
+            accounts[k] = left[i]
+            i += 1
+            k += 1
+        
+        while j < len(right):
+            accounts[k] = right[j]
+            j += 1
+            k += 1
+    
+    return accounts
