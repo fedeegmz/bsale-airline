@@ -4,7 +4,6 @@ import os
 # FastAPI
 from fastapi import FastAPI, Path
 from fastapi import HTTPException, status
-# from fastapi.encoders import jsonable_encoder
 
 # mysql
 import mysql.connector
@@ -16,8 +15,9 @@ from models import FlightData, AirplaneData, SeatData, AccountData, ResponseMode
 from serializers import flight_serializer, airplane_serializer, accounts_serializer
 
 # util
-from util import group_accounts, get_parents, get_next_to, get_near_seat
-from util import search_seat_by_id, is_next_to, search_seat_for_two_passengers, update_airplane
+from util import group_accounts, get_parents, get_near_seat
+from util import search_seat_by_id, search_seat_for_two_passengers, search_group_of_empty_seats
+from util import update_airplane
 
 # load env
 db_host = "mdb-test.c6vunyturrl6.us-west-1.rds.amazonaws.com"
@@ -172,8 +172,48 @@ async def check_in(
                 }
             )
         accounts_ready.append(child)
+    
+    # seat people group by purchaseId
+    group_accounts_by_purchase_id: list[list[AccountData]] = []
+    accounts_group: list[AccountData] = []
+    m = 0
+    for account in accounts_to_update:
+        
+        if len(accounts_group) == 0:
+            accounts_group.append(account)
+        elif account.purchaseId == accounts_group[len(accounts_group) - 1].purchaseId:
+            accounts_group.append(account)
+        elif not account.purchaseId == accounts_group[len(accounts_group) - 1].purchaseId:
+                
+            group_accounts_by_purchase_id.append(accounts_group)
+            accounts_group = []
+            accounts_group.append(account)
+            if m == len(accounts_to_update):
+                group_accounts_by_purchase_id.append(accounts_group)
+        m += 1
+    
+    n = 0
+    for accounts in group_accounts_by_purchase_id:
+        group_available_seats: list[list] = search_group_of_empty_seats(
+            accounts[0].seatTypeId,
+            airplane_empty_seats.seats
+        )
+        
+        for group in group_available_seats:
+            if len(group) >= len(accounts):
+
+                for account in accounts:
+                    seat_id = group.pop()
+                    seat_to_assign = search_seat_by_id(seat_id, airplane_empty_seats.seats)
+                    if seat_to_assign and account.seatTypeId == seat_to_assign.seatTypeId and account.seatId == None:
+                        account.seatId = seat_id
+                        accounts_ready.append(account)
+                        update_airplane(seat_id, airplane_empty_seats.seats)
+        n += 1
+    
 
     # TODO: ordenar por seatId accounts_ready
+    print(f'accounts_ready: {len(accounts_ready)}')
     flight_data.passengers = accounts_ready
     return ResponseModel(
         code = 200,
