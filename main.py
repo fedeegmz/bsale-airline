@@ -189,7 +189,6 @@ async def check_in(
                     group_accounts_by_purchase_id.append(accounts_group)
             m += 1
         
-        n = 0
         for accounts in group_accounts_by_purchase_id:
             group_available_seats: list[list] = search_group_of_empty_seats(
                 accounts[0].seatTypeId,
@@ -206,7 +205,22 @@ async def check_in(
                             account.seatId = seat_id
                             accounts_ready.append(account)
                             update_airplane(seat_id, airplane_empty_seats.seats)
-            n += 1
+                            n = 0
+                            for p in accounts_to_update:
+                                if account.dni == p.dni:
+                                    accounts_to_update.pop(n)
+                                n += 1
+        
+        if len(accounts_to_update) != 0:
+            for acc in accounts_to_update:
+                for seat in airplane_empty_seats.seats:
+                    if not acc.seatId and seat.seatTypeId == acc.seatTypeId:
+                        acc.seatId = seat.seatId
+                        accounts_ready.append(acc)
+                        update_airplane(seat.seatId, airplane_empty_seats.seats)
+        
+        print(f'to_update_after_assignament: {len(accounts_to_update)}')
+        print([(a.purchaseId, a.seatId) for a in accounts_to_update])
 
         flight_data.passengers = order_ready_accounts(accounts_ready)
         print(f'ready: {len(flight_data.passengers)}')

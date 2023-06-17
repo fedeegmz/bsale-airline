@@ -1,6 +1,6 @@
-# Bsale Airline
+# Bsale Airline API
 **url**: https://checkinairline-1-s8126205.deta.app  
-La API tiene dos endpoint:
+### Endpoints:
 - **root**:
     - **path**: "/"  
     - **response**: JSON
@@ -45,8 +45,12 @@ La API tiene dos endpoint:
         - **error al no encontrar un flight_id**: status_code=404
         - **si un pasajero menor de 18 años no tiene adultos responsables**: status_code=409
         - **si no se encuentra un asiento**: status_code=409
+### Docs
+La documentación (Swagger) se encuentra en ["/docs"](https://checkinairline-1-s8126205.deta.app/docs).  
 ## Ejecutar en local
 Una vez clonado el repositorio, es necesario instalar los requerimientos. Antes de eso hay que **descomentar** las líneas en el archivo requirements.txt.  
-Para instalar las dependencias ejecutar ```pip install requirements.txt```
+Para instalar las dependencias ejecutar ```pip install requirements.txt```  
 ### Servidor
 Comando para iniciar el servidor ```uvicorn main:app --reload```  
+### Testing
+Comando para ejecutar los tests ```pytest```  
