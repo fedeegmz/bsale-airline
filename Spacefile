@@ -1,0 +1,16 @@
+# Spacefile Docs: https://go.deta.dev/docs/spacefile/v0
+v: 0
+app_name: "Airline"
+micros:
+  - name: checkin-airline
+    src: ./
+    engine: python3.9
+    primary: true
+    presets:
+      env:
+        - name: BSALE_AIRLINE_DB_USERNAME
+          description: username for MySQL
+          default: "bsale_test"
+        - name: BSALE_AIRLINE_DB_PASSWORD
+          description: password for MySQL
+          default: "bsale_test"
