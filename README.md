@@ -1,16 +1,16 @@
 # Bsale Airline
-**url**: https://deta.space/discovery/r/fequtwywazgg2c61  
+**url**: https://checkinairline-1-s8126205.deta.app  
 La API tiene dos endpoint:
 - **root**:
     - **path**: "/"  
     - **response**: JSON
         ```json
         {
-            "testData": "Hello World"
+            "url": "https://checkinairline-1-s8126205.deta.app/flights/1/passengers"
         }
         ```
 - **check_in**:  
-    - **path**: "/flights/<flight_id>/passengers"  
+    - **path**: ["/flights/<flight_id>/passengers"](https://checkinairline-1-s8126205.deta.app/flights/1/passengers)  
     - **path param**: flight_id (int que corresponde al id de vuelo)  
     - **response**: JSON  
         ```json

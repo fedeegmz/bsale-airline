@@ -29,7 +29,7 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return {"testData": "Hello World"}
+    return {"url": "https://checkinairline-1-s8126205.deta.app/flights/1/passengers"}
 
 
 @app.get(
