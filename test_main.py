@@ -20,11 +20,11 @@ def get_accounts(flight_id):
         database = "airline"
     )
     cursor = cnx.cursor()
-    accounts_data_query: str = f'SELECT p.dni'\
+    accounts_data_query: str = f'SELECT p.dni '\
                                 f'FROM airline.boarding_pass AS bp '\
                                 f'LEFT JOIN airline.passenger AS p '\
                                 f'    ON bp.passenger_id = p.passenger_id '\
-                                f'WHERE flight_id = {flight_id}; '
+                                f'WHERE bp.flight_id = {flight_id};'
     cursor.execute(accounts_data_query)
     accounts_data = cursor.fetchall()
     accounts_data: list[AccountData] = [AccountData(**accounts_serializer(account)) for account in accounts_data]
