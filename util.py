@@ -174,7 +174,7 @@ def get_next_to(seat: SeatData, airplane: list[SeatData]):
         - seat: SeatData  
         - airplane: list[SeatData]  
     - Return:  
-        - SeatData
+        - list[SeatData]
     """
     list_to_return = []
 
