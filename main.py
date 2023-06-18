@@ -17,7 +17,7 @@ from serializers import flight_serializer, airplane_serializer, accounts_seriali
 # util
 from util import group_accounts, get_parents, get_near_seat
 from util import search_seat_by_id, search_seat_for_two_passengers, search_group_of_empty_seats
-from util import update_airplane, order_ready_accounts, assign_seat_for_passenger
+from util import update_airplane, assign_seat_for_passenger, order_ready_accounts
 
 # load env
 db_host = "mdb-test.c6vunyturrl6.us-west-1.rds.amazonaws.com"
@@ -176,7 +176,7 @@ async def check_in(
             )
         
         # seat people group by purchaseId
-        group_accounts_by_purchase_id: list[list[AccountData]] = []
+        group_accounts_by_purchase_id: list[list[AccountData]] = [] # lista con listas de cuentas agrupadas por purchaseId
         accounts_group: list[AccountData] = []
         m = 0
         for account in accounts_to_update:

@@ -109,21 +109,19 @@ def search_seat_for_two_passengers(
                 airplane
             )
             if next_seat:
-                if next_to and is_next_to(seat, next_seat, airplane_type):
+                if next_to and is_next_to(seat, next_seat):
                     return (seat.seatId, next_seat.seatId)
     
     if next_to:
         return None
     return (seat.seatId, next_seat.seatId)
 
-def is_next_to(seat1: SeatData, seat2: SeatData, airplane_type: int):
+def is_next_to(seat1: SeatData, seat2: SeatData):
     """
     Verifica que dos asientos sean consecutivos  
     - Param:  
         - seat1: SeatData  
-        - seat2: SeatData  
-        - airplane: list[SeatData]  
-        - airplane_type: int  
+        - seat2: SeatData     
     - Return:  
         - True or False
     """
@@ -133,39 +131,8 @@ def is_next_to(seat1: SeatData, seat2: SeatData, airplane_type: int):
         return False
     if seat1.seatTypeId != seat2.seatTypeId:
         return False
-    
-    if airplane_type == 1:
-        if seat1.seatTypeId == 1:
-            if (seat1.seatColumn == "A" or seat2.seatColumn == "A") and (seat1.seatColumn == "B" or seat2.seatColumn == "B"):
-                return True
-            if (seat1.seatColumn == "F" or seat2.seatColumn == "F") and (seat1.seatColumn == "G" or seat2.seatColumn == "G"):
-                return True
-        else:
-            if (seat1.seatColumn == "A" or seat2.seatColumn == "A") and (seat1.seatColumn == "B" or seat2.seatColumn == "B"):
-                return True
-            if (seat1.seatColumn == "B" or seat2.seatColumn == "B") and (seat1.seatColumn == "C" or seat2.seatColumn == "C"):
-                return True
-            
-            if (seat1.seatColumn == "E" or seat2.seatColumn == "E") and (seat1.seatColumn == "F" or seat2.seatColumn == "F"):
-                return True
-            if (seat1.seatColumn == "F" or seat2.seatColumn == "F") and (seat1.seatColumn == "G" or seat2.seatColumn == "G"):
-                return True
-    if airplane_type == 2:
-        if seat1.seatTypeId == 1:
-            return False
-        else:
-            if (seat1.seatColumn == "A" or seat2.seatColumn == "A") and (seat1.seatColumn == "B" or seat2.seatColumn == "B"):
-                return True
-            
-            if (seat1.seatColumn == "D" or seat2.seatColumn == "D") and (seat1.seatColumn == "E" or seat2.seatColumn == "E"):
-                return True
-            if (seat1.seatColumn == "E" or seat2.seatColumn == "E") and (seat1.seatColumn == "F" or seat2.seatColumn == "F"):
-                return True
-            
-            if (seat1.seatColumn == "H" or seat2.seatColumn == "H") and (seat1.seatColumn == "I" or seat2.seatColumn == "I"):
-                return True
-
-    return False
+    if abs(ord(seat1.seatColumn) - ord(seat2.seatColumn)) == 1:
+        return True
 
 def get_next_to(seat: SeatData, airplane: list[SeatData]):
     """

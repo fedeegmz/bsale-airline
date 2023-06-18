@@ -75,7 +75,7 @@ def get_quantity_passengers_group_by_purchase_id(fligth_id):
         list_to_return.append(d[1])
     return list_to_return
 
-def get_around_seats(seat: SeatData, airplane):
+def get_around_seats(seat: SeatData, airplane: list[SeatData]):
     list_to_return = []
     right_seat = search_seat_by_col_and_row(
         chr(ord(seat.seatColumn) + 1),
@@ -93,20 +93,21 @@ def get_around_seats(seat: SeatData, airplane):
         list_to_return.append(left_seat.seatId)
     next_seat = search_seat_by_col_and_row(
         seat.seatColumn,
-        str(int(seat.seatRow) - 1),
+        seat.seatRow - 1,
         airplane
     )
     if next_seat:
         list_to_return.append(next_seat.seatId)
     back_seat = search_seat_by_col_and_row(
         seat.seatColumn,
-        str(int(seat.seatRow) + 1),
+        seat.seatRow + 1,
         airplane
     )
     if back_seat:
         list_to_return.append(back_seat.seatId)
     return list_to_return
 
+# TESTS #
 ### flightData ###
 
 def test_flight_data_for_flight_id_0():
@@ -395,22 +396,172 @@ def test_children_seated_with_parent_for_flight_id_4():
 
 ### seated near passengers with the same purchaseId ###
 
-# def test_80_percent_passengers_seated_near_with_purchase_id_for_flight_id_1():
-#     response = client.get("/flights/1/passengers")
-#     passengers = response.json().get("data").get("passengers")
+def test_60_percent_passengers_seated_near_with_purchase_id_for_flight_id_1():
+    response = client.get("/flights/1/passengers")
+    passengers = response.json().get("data").get("passengers")
+    airplane = get_airplane_data(1)
+    purchase_id_for_alone_passengers = get_quantity_passengers_group_by_purchase_id(1)
 
-#     airplane = get_airplane_data(1).seats
-#     purchase_id_for_alone_passengers = get_quantity_passengers_group_by_purchase_id(1)
+    passengers_not_alone = 0
+    i = 0
+    for passenger in passengers:
+        if passenger.get("purchaseId") in purchase_id_for_alone_passengers:
+            passengers_not_alone += 1
 
-#     count = 0
-#     for passenger in passengers:
-#         around_seats = get_around_seats(airplane)
-#         if passenger.get("purchaseId") in purchase_id_for_alone_passengers:
-#             continue
+        passenger_seat = search_seat_by_id(passenger.get("seatId"), airplane.seats)
+        around_id_seats = get_around_seats(passenger_seat, airplane.seats)
+        if not around_id_seats:
+            assert False
 
-#         for seat_id in around_seats:
-#             for p in passengers:
-#                 if p.get("seatId") == seat_id:
-#                     if p.get("purchaseId") != passenger.get("purchaseId"):
-        
+        n = i + 1
+        while n < len(passengers):
+            if passenger.get("purchaseId") == passengers[n].get("purchaseId"):
+                for id_seat in around_id_seats:
+                    if id_seat == passengers[n].get("seatId"):
+                        passengers_not_alone += 1
+                        break
+            n += 1
+        i += 1
+    
+    assert (100 * passengers_not_alone / len(passengers)) >= 60
 
+def test_60_percent_passengers_seated_near_with_purchase_id_for_flight_id_2():
+    response = client.get("/flights/2/passengers")
+    passengers = response.json().get("data").get("passengers")
+    airplane = get_airplane_data(2)
+    purchase_id_for_alone_passengers = get_quantity_passengers_group_by_purchase_id(1)
+
+    passengers_not_alone = 0
+    i = 0
+    for passenger in passengers:
+        if passenger.get("purchaseId") in purchase_id_for_alone_passengers:
+            passengers_not_alone += 1
+
+        passenger_seat = search_seat_by_id(passenger.get("seatId"), airplane.seats)
+        around_id_seats = get_around_seats(passenger_seat, airplane.seats)
+        if not around_id_seats:
+            assert False
+
+        n = i + 1
+        while n < len(passengers):
+            if passenger.get("purchaseId") == passengers[n].get("purchaseId"):
+                for id_seat in around_id_seats:
+                    if id_seat == passengers[n].get("seatId"):
+                        passengers_not_alone += 1
+                        break
+            n += 1
+        i += 1
+    
+    assert (100 * passengers_not_alone / len(passengers)) >= 60
+
+def test_60_percent_passengers_seated_near_with_purchase_id_for_flight_id_3():
+    response = client.get("/flights/3/passengers")
+    passengers = response.json().get("data").get("passengers")
+    airplane = get_airplane_data(2)
+    purchase_id_for_alone_passengers = get_quantity_passengers_group_by_purchase_id(1)
+
+    passengers_not_alone = 0
+    i = 0
+    for passenger in passengers:
+        if passenger.get("purchaseId") in purchase_id_for_alone_passengers:
+            passengers_not_alone += 1
+
+        passenger_seat = search_seat_by_id(passenger.get("seatId"), airplane.seats)
+        around_id_seats = get_around_seats(passenger_seat, airplane.seats)
+        if not around_id_seats:
+            assert False
+
+        n = i + 1
+        while n < len(passengers):
+            if passenger.get("purchaseId") == passengers[n].get("purchaseId"):
+                for id_seat in around_id_seats:
+                    if id_seat == passengers[n].get("seatId"):
+                        passengers_not_alone += 1
+                        break
+            n += 1
+        i += 1
+    
+    assert (100 * passengers_not_alone / len(passengers)) >= 60
+
+def test_60_percent_passengers_seated_near_with_purchase_id_for_flight_id_4():
+    response = client.get("/flights/4/passengers")
+    passengers = response.json().get("data").get("passengers")
+    airplane = get_airplane_data(1)
+    purchase_id_for_alone_passengers = get_quantity_passengers_group_by_purchase_id(1)
+
+    passengers_not_alone = 0
+    i = 0
+    for passenger in passengers:
+        if passenger.get("purchaseId") in purchase_id_for_alone_passengers:
+            passengers_not_alone += 1
+
+        passenger_seat = search_seat_by_id(passenger.get("seatId"), airplane.seats)
+        around_id_seats = get_around_seats(passenger_seat, airplane.seats)
+        if not around_id_seats:
+            assert False
+
+        n = i + 1
+        while n < len(passengers):
+            if passenger.get("purchaseId") == passengers[n].get("purchaseId"):
+                for id_seat in around_id_seats:
+                    if id_seat == passengers[n].get("seatId"):
+                        passengers_not_alone += 1
+                        break
+            n += 1
+        i += 1
+    
+    assert (100 * passengers_not_alone / len(passengers)) >= 60
+
+### seated passengers in their seat class ###
+
+def test_seated_passengers_in_their_seat_class_for_flight_id_1():
+    response = client.get("/flights/1/passengers")
+    passengers = response.json().get("data").get("passengers")
+    airplane = get_airplane_data(1)
+
+    for passenger in passengers:
+        seat = search_seat_by_id(
+            passenger.get("seatId"),
+            airplane.seats
+        )
+        if not passenger.get("seatTypeId") == seat.seatTypeId:
+            assert False
+
+def test_seated_passengers_in_their_seat_class_for_flight_id_2():
+    response = client.get("/flights/2/passengers")
+    passengers = response.json().get("data").get("passengers")
+    airplane = get_airplane_data(2)
+
+    for passenger in passengers:
+        seat = search_seat_by_id(
+            passenger.get("seatId"),
+            airplane.seats
+        )
+        if not passenger.get("seatTypeId") == seat.seatTypeId:
+            assert False
+
+def test_seated_passengers_in_their_seat_class_for_flight_id_3():
+    response = client.get("/flights/3/passengers")
+    passengers = response.json().get("data").get("passengers")
+    airplane = get_airplane_data(2)
+
+    for passenger in passengers:
+        seat = search_seat_by_id(
+            passenger.get("seatId"),
+            airplane.seats
+        )
+        if not passenger.get("seatTypeId") == seat.seatTypeId:
+            assert False
+
+def test_seated_passengers_in_their_seat_class_for_flight_id_4():
+    response = client.get("/flights/4/passengers")
+    passengers = response.json().get("data").get("passengers")
+    airplane = get_airplane_data(1)
+
+    for passenger in passengers:
+        seat = search_seat_by_id(
+            passenger.get("seatId"),
+            airplane.seats
+        )
+        if not passenger.get("seatTypeId") == seat.seatTypeId:
+            assert False
