@@ -1,5 +1,16 @@
 # Bsale Airline API
 **url**: https://checkinairline-1-s8126205.deta.app  
+  
+La API simula el trabajo de una aerolínea, ubicando a los pasajeros en un avión. Se realizó con **Python** (framework: **FastAPI**). Solo cuenta con el endpoint **check_in**, además del endpoint root (que solo retorna una url).  
+Este endpoint recibe por path parameter el id de vuelo. Con ese id realiza diferentes consultas para accede a los datos necesarios (información de los pasajeros y sus tarjetas de embarque, información de los aviones, información de vuelos, etc), que se encuentran en una base de datos MySQL. Para la conexión entre FastAPI y MySQL se utilizó **MySQL Driver**.  
+Ya con los datos listos, ordena los pasajeros en los asientos vacíos que quedan. Se le da prioridad a los pasajeros menores de 18 años, debido a que deben sentarse al lado de un adulto que se responsabilice de ellos. Luego se van asignando asientos (en la misma fila o culumna en los posible) para los demas pasajeros, dando prioridad a los grupos más grandes, es decir, los grupos más grandes de pasajeros que hicieron la compra del pasaje a la vez (comparten purchaseId).  
+El endpoint check_in cuenta con varios tests escritos también en Python (**PyTest**) que verifican que:
+- los datos del vuelo estén correctos
+- la cantidad de pasajeros retornados sea la correcta
+- no se repitan pasajeros
+- los pasajeros menores de 18 años tienen a un adulto responsable al lado
+- no se asignaron asientos de una clase diferente a ningún pasajero
+- hay 60% o más de pasajeros que tienen a un acompañante cerca (que comparta purchaseId)  
 ### Endpoints:
 - **root**:
     - **path**: "/"  
@@ -46,7 +57,7 @@
         - **si un pasajero menor de 18 años no tiene adultos responsables**: status_code=409
         - **si no se encuentra un asiento**: status_code=409
 ### Docs
-La documentación (Swagger) se encuentra en ["/docs"](https://checkinairline-1-s8126205.deta.app/docs).  
+La documentación (**Swagger**) se encuentra en ["/docs"](https://checkinairline-1-s8126205.deta.app/docs).  
 ## Ejecutar en local
 Una vez clonado el repositorio, es necesario instalar los requerimientos. Antes de eso hay que **descomentar** las líneas en el archivo requirements.txt.  
 Para instalar las dependencias ejecutar ```pip install requirements.txt```  

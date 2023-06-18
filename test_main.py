@@ -3,8 +3,8 @@ from fastapi.testclient import TestClient
 import mysql.connector
 
 from main import app
-from models import AccountData, AirplaneData, SeatData
-from serializers import accounts_serializer, airplane_serializer
+from models import AirplaneData, SeatData
+from serializers import airplane_serializer
 from util import search_seat_by_id, search_seat_by_col_and_row, get_next_to
 
 client = TestClient(app)
