@@ -72,7 +72,7 @@ def search_seat_by_id(id: int, airplane: list[SeatData]):
             return seat
     return None
 
-def search_seat_by_col_and_row(col: str, row: str, airplane: list[SeatData]):
+def search_seat_by_col_and_row(col: str, row: int, airplane: list[SeatData]):
     """
     Busca un asiento por columna y fila, si no hay retorna None  
     - Param:          
@@ -82,9 +82,6 @@ def search_seat_by_col_and_row(col: str, row: str, airplane: list[SeatData]):
     - Return:  
         - SeatData
     """
-    col = str(col)
-    row = str(row)
-
     for seat in airplane:
         if seat.seatColumn == col and seat.seatRow == row:
             return seat
@@ -109,8 +106,7 @@ def search_seat_for_two_passengers(
         if seat.seatTypeId == seat_type:
             next_seat = get_near_seat(
                 seat,
-                airplane,
-                airplane_type
+                airplane
             )
             if next_seat:
                 if next_to and is_next_to(seat, next_seat, airplane_type):
@@ -171,88 +167,56 @@ def is_next_to(seat1: SeatData, seat2: SeatData, airplane_type: int):
 
     return False
 
-def get_next_to(seat: SeatData, airplane: list[SeatData], airplane_type: int):
+def get_next_to(seat: SeatData, airplane: list[SeatData]):
     """
-    Busca un asiento consecutivo y disponible  
+    Busca un asiento consecutivo y disponible (busca solo a la derecha)  
     - Param:  
         - seat: SeatData  
         - airplane: list[SeatData]  
-        - airplane_type: int  
     - Return:  
         - SeatData
     """
-    if airplane_type == 1:
-        if seat.seatTypeId == 1:
-            if seat.seatColumn == "A":
-                return search_seat_by_col_and_row("B", seat.seatRow, airplane)
-            if seat.seatColumn == "B":
-                return search_seat_by_col_and_row("A", seat.seatRow, airplane)
-            if seat.seatColumn == "F":
-                return search_seat_by_col_and_row("G", seat.seatRow, airplane)
-            if seat.seatColumn == "G":
-                return search_seat_by_col_and_row("F", seat.seatRow, airplane)
-        else:
-            if seat.seatColumn == "A":
-                return search_seat_by_col_and_row("B", seat.seatRow, airplane)
-            if seat.seatColumn == "B":
-                available_seats = search_seat_by_col_and_row("A", seat.seatRow, airplane)
-                if not available_seats:
-                    available_seats = search_seat_by_col_and_row("C", seat.seatRow, airplane)
-                return available_seats
-            if seat.seatColumn == "C":
-                return search_seat_by_col_and_row("B", seat.seatRow, airplane)
-            
-            if seat.seatColumn == "E":
-                return search_seat_by_col_and_row("F", seat.seatRow, airplane)
-            if seat.seatColumn == "F":
-                available_seats = search_seat_by_col_and_row("E", seat.seatRow, airplane)
-                if not available_seats:
-                    available_seats = search_seat_by_col_and_row("G", seat.seatRow, airplane)
-                return available_seats
-            if seat.seatColumn == "G":
-                return search_seat_by_col_and_row("F", seat.seatRow, airplane)
-    elif airplane_type == 2:
-        if seat.seatTypeId == 1:
-            return None
-        else:
-            if seat.seatColumn == "A":
-                return search_seat_by_col_and_row("B", seat.seatRow, airplane)
-            if seat.seatColumn == "B":
-                return search_seat_by_col_and_row("A", seat.seatRow, airplane)
-            
-            if seat.seatColumn == "D":
-                return search_seat_by_col_and_row("E", seat.seatRow, airplane)
-            if seat.seatColumn == "E":
-                available_seats = search_seat_by_col_and_row("D", seat.seatRow, airplane)
-                if not available_seats:
-                    available_seats = search_seat_by_col_and_row("F", seat.seatRow, airplane)
-                return available_seats
-            
-            if seat.seatColumn == "H":
-                return search_seat_by_col_and_row("I", seat.seatRow, airplane)
-            if seat.seatColumn == "I":
-                return search_seat_by_col_and_row("H", seat.seatRow, airplane)
+    list_to_return = []
 
-def get_near_seat(seat: SeatData, airplane: list[SeatData], airplane_type: int):
+    next_right_seat = search_seat_by_col_and_row(
+        chr(ord(seat.seatColumn) + 1),
+        seat.seatRow,
+        airplane
+    )
+    if next_right_seat:
+        list_to_return.append(next_right_seat)
+    
+    next_left_seat = search_seat_by_col_and_row(
+        chr(ord(seat.seatColumn) - 1),
+        seat.seatRow,
+        airplane
+    )
+    if next_left_seat:
+        list_to_return.append(next_left_seat)
+    
+    if not len(list_to_return) == 0:
+        return list_to_return
+    return None
+
+def get_near_seat(seat: SeatData, airplane: list[SeatData]):
     """
     Busca un asiento cerca. Primero busca en la misma fila; si no hay, busca en la misma columna.
     Si no hay retorna None  
     - Param:  
         - seat: SeatData  
         - airplane: list[SeatData]  
-        - airplane_type: int  
     - Return:  
         - SeatData
     """
-    near_seat: SeatData = get_next_to(seat, airplane, airplane_type)
+    near_seat: SeatData
+    next_seat = get_next_to(seat, airplane)
+    if next_seat:
+        return next_seat[0]
     
-    if near_seat:
-        return near_seat
-    
-    near_seat = search_seat_by_col_and_row(seat.seatColumn, str(int(seat.seatRow) - 1), airplane)
+    near_seat = search_seat_by_col_and_row(seat.seatColumn, seat.seatRow - 1, airplane)
     
     if not near_seat or seat.seatTypeId != near_seat.seatTypeId:
-        near_seat = search_seat_by_col_and_row(seat.seatColumn, str(int(seat.seatRow) + 1), airplane)
+        near_seat = search_seat_by_col_and_row(seat.seatColumn, seat.seatRow + 1, airplane)
     
     if near_seat:
         return near_seat
@@ -273,19 +237,27 @@ def update_airplane(seat_id: int, airplane: list[SeatData]):
             return airplane.pop(n)
         n += 1
 
-def get_next_available_seat(seat_type: int, airplane: list[SeatData]):
+def assign_seat_for_passenger(
+    passenger: AccountData,
+    passengers_list: list[AccountData],
+    airplane: list[SeatData] = None,
+    seat_id: int = None
+):
     """
-    **Generator**.  
-    Retorna el proximo lugar disponible en el avion.  
-    - Param:  
-        - seat_type: int  
-        - airplane: list[SeatData]  
-    - Yield:  
-        - SeatData
+    Agrega un pasajero a la lista de pasajeros con asiento asignado.  
+    Si se recibe el parametro seat_id se le asigna al seatId del pasajero.
+    Si se recibe el parametro airplane se actualizan los lugares vacios del avion.  
+    - Param:
+        - passenger: AccountData  
+        - passengers_list: list[AccountData]  
+        - airplane: list[SeatData] = por defecto es None  
+        - seat_id: int = por defecto es None
     """
-    for seat in airplane:
-        if seat.seatTypeId == seat_type:
-            yield seat
+    if seat_id:
+        passenger.seatId = seat_id
+    passengers_list.append(passenger)
+    if airplane:
+        update_airplane(passenger.seatId, airplane)
 
 def search_group_of_empty_seats(seat_type: int, airplane: list[SeatData]):
     """
@@ -346,7 +318,7 @@ def search_group_of_empty_seats(seat_type: int, airplane: list[SeatData]):
         if not len(ids) == 0:
             back_seat = search_seat_by_col_and_row(
                 seat.seatColumn,
-                str(int(seat.seatRow) + 1),
+                seat.seatRow + 1,
                 airplane
             )
             while back_seat and back_seat.seatTypeId == seat_type:
@@ -358,7 +330,7 @@ def search_group_of_empty_seats(seat_type: int, airplane: list[SeatData]):
                 
                 back_seat = search_seat_by_col_and_row(
                     seat.seatColumn,
-                    str(int(back_seat.seatRow) + 1),
+                    back_seat.seatRow + 1,
                     airplane
                 )
         
@@ -408,3 +380,18 @@ def order_ready_accounts(accounts: list[AccountData]):
             k += 1
     
     return accounts
+
+
+# def get_next_available_seat(seat_type: int, airplane: list[SeatData]):
+#     """
+#     **Generator**.  
+#     Retorna el proximo lugar disponible en el avion.  
+#     - Param:  
+#         - seat_type: int  
+#         - airplane: list[SeatData]  
+#     - Yield:  
+#         - SeatData
+#     """
+#     for seat in airplane:
+#         if seat.seatTypeId == seat_type:
+#             yield seat

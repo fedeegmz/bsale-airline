@@ -17,7 +17,7 @@ from serializers import flight_serializer, airplane_serializer, accounts_seriali
 # util
 from util import group_accounts, get_parents, get_near_seat
 from util import search_seat_by_id, search_seat_for_two_passengers, search_group_of_empty_seats
-from util import update_airplane, order_ready_accounts
+from util import update_airplane, order_ready_accounts, assign_seat_for_passenger
 
 # load env
 db_host = "mdb-test.c6vunyturrl6.us-west-1.rds.amazonaws.com"
@@ -148,15 +148,17 @@ async def check_in(
                 elif child.seatId:
                     parent_seat = get_near_seat(
                         search_seat_by_id(child.seatId, airplane_data.seats),
-                        airplane_empty_seats.seats,
-                        flight_data.airplaneId
+                        airplane_empty_seats.seats
                     )
                     
                     if parent_seat:
                         parent.seatId = parent_seat.seatId
                         update_airplane(parent_seat.seatId, airplane_empty_seats.seats)
                 if parent.seatId:
-                    accounts_ready.append(parent)
+                    assign_seat_for_passenger(
+                        passenger = parent,
+                        passengers_list = accounts_ready
+                    )
                 else:
                     accounts_to_update.append(parent)
 
@@ -168,7 +170,10 @@ async def check_in(
                         "errors": "Seat not found"
                     }
                 )
-            accounts_ready.append(child)
+            assign_seat_for_passenger(
+                passenger = child,
+                passengers_list = accounts_ready
+            )
         
         # seat people group by purchaseId
         group_accounts_by_purchase_id: list[list[AccountData]] = []
@@ -202,9 +207,12 @@ async def check_in(
                         seat_id = group.pop()
                         seat_to_assign = search_seat_by_id(seat_id, airplane_empty_seats.seats)
                         if seat_to_assign and account.seatTypeId == seat_to_assign.seatTypeId and account.seatId == None:
-                            account.seatId = seat_id
-                            accounts_ready.append(account)
-                            update_airplane(seat_id, airplane_empty_seats.seats)
+                            assign_seat_for_passenger(
+                                seat_id = seat_id,
+                                passenger = account,
+                                passengers_list = accounts_ready,
+                                airplane = airplane_empty_seats.seats
+                            )
                             n = 0
                             for p in accounts_to_update:
                                 if account.dni == p.dni:
@@ -215,9 +223,12 @@ async def check_in(
             for acc in accounts_to_update:
                 for seat in airplane_empty_seats.seats:
                     if not acc.seatId and seat.seatTypeId == acc.seatTypeId:
-                        acc.seatId = seat.seatId
-                        accounts_ready.append(acc)
-                        update_airplane(seat.seatId, airplane_empty_seats.seats)
+                        assign_seat_for_passenger(
+                            seat_id = seat.seatId,
+                            passenger = acc,
+                            passengers_list = accounts_ready,
+                            airplane = airplane_empty_seats.seats
+                        )
         
         print(f'to_update_after_assignament: {len(accounts_to_update)}')
         print([(a.purchaseId, a.seatId) for a in accounts_to_update])
@@ -234,6 +245,7 @@ async def check_in(
             status_code = status.HTTP_404_NOT_FOUND,
             detail = {
                 "code": 404,
-                "data": {}
+                "data": {},
+                # "errmsg": str(err)
             }
         )

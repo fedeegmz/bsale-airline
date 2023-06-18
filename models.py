@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 class AccountData(BaseModel):
     passengerId: int = Field(...)
-    dni: str = Field(...)
+    dni: int = Field(...)
     name: str = Field(...)
     age: int = Field(...)
     country: str = Field(...)
@@ -24,7 +24,7 @@ class FlightData(BaseModel):
 class SeatData(BaseModel):
     seatId: int = Field(...)
     seatColumn: str = Field(...)
-    seatRow: str = Field(...)
+    seatRow: int = Field(...)
     seatTypeId: int = Field(...) #FK -> SeatType
 
 class AirplaneData(BaseModel):

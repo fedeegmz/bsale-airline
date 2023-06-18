@@ -6,6 +6,8 @@ micros:
     src: ./
     engine: python3.9
     primary: true
+    public_routes:
+      - "/*"
     presets:
       env:
         - name: BSALE_AIRLINE_DB_USERNAME

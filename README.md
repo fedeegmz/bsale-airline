@@ -54,3 +54,6 @@ Para instalar las dependencias ejecutar ```pip install requirements.txt```
 Comando para iniciar el servidor ```uvicorn main:app --reload```  
 ### Testing
 Comando para ejecutar los tests ```pytest```  
+# A mejorar
+- Para los pasajeros que viajan de a dos (es decir, cuando solo hay dos pasajeros con el mismo purchaseId) sentarlos al lado.
+- Si un pasajero viaja solo (es decir, no hay otro pasajero con el mismo purchaseId) que su asiento no tenga un asiento disponible al lado; para optimizar el especio
