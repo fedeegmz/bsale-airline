@@ -1,11 +1,25 @@
+# Python
 import os
+
+# FastAPI
 from fastapi.testclient import TestClient
+
+# MySQL
 import mysql.connector
 
+# main
 from main import app
-from models import AirplaneData, SeatData
-from serializers import airplane_serializer
+
+# models
+from models.seat_data import SeatData
+from models.airplane_data import AirplaneData
+
+# serializers
+from serializers.airplane import airplane_serializer
+
+# util
 from util import search_seat_by_id, search_seat_by_col_and_row, get_next_to
+
 
 client = TestClient(app)
 

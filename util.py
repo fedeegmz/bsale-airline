@@ -1,4 +1,7 @@
-from models import AccountData, SeatData
+# models
+from models.account_data import AccountData
+from models.seat_data import SeatData
+
 
 def group_accounts(accounts: list[AccountData]):
     """

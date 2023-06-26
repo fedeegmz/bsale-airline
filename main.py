@@ -5,14 +5,19 @@ import os
 from fastapi import FastAPI, Path
 from fastapi import HTTPException, status
 
-# mysql
+# MySQL
 import mysql.connector
 
 # models
-from models import FlightData, AirplaneData, SeatData, AccountData, ResponseModel
+from models.account_data import AccountData
+from models.flight_data import FlightData
+from models.airplane_data import AirplaneData
+from models.response.model import ResponseModel
 
 # serializers
-from serializers import flight_serializer, airplane_serializer, accounts_serializer
+from serializers.accounts import accounts_serializer
+from serializers.flight import flight_serializer
+from serializers.airplane import airplane_serializer
 
 # util
 from util import group_accounts, get_parents, get_near_seat
@@ -42,6 +47,15 @@ async def root():
 async def check_in(
     flight_id: str = Path(...)
 ):
+    if not flight_id in ("1", "2", "3", "4"):
+        raise HTTPException(
+            status_code = status.HTTP_400_BAD_REQUEST,
+            detail = {
+                "code": 400,
+                "errors": "incorrect flight id"
+            }
+        )
+    
     try:
         ### db connection ###
         cnx = mysql.connector.connect(
@@ -68,7 +82,7 @@ async def check_in(
         flight_data = cursor.fetchone()
         flight_data: FlightData = flight_serializer(flight_data)
 
-        # get AIRPLANE DATA (empty seats)
+        # get AIRPLANE DATA (all seats - empty seats)
         airplane_data_query: str = f'SELECT s.seat_id, s.seat_column, s.seat_row, s.seat_type_id '\
                                     f'FROM airline.seat AS s '\
                                     f'WHERE s.airplane_id = {flight_data.airplaneId}'
