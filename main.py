@@ -1,12 +1,12 @@
-# Python
-import os
-
 # FastAPI
 from fastapi import FastAPI, Path
 from fastapi import HTTPException, status
 
 # MySQL
 import mysql.connector
+
+# security
+from security.config import settings
 
 # models
 from models.account_data import AccountData
@@ -25,9 +25,9 @@ from util import search_seat_by_id, search_seat_for_two_passengers, search_group
 from util import update_airplane, assign_seat_for_passenger, order_ready_accounts
 
 # load env
-db_host = "mdb-test.c6vunyturrl6.us-west-1.rds.amazonaws.com"
-db_username = os.getenv("BSALE_AIRLINE_DB_USERNAME")
-db_password = os.getenv("BSALE_AIRLINE_DB_PASSWORD")
+db_host = settings.mysql_host
+db_username = settings.mysql_user
+db_password = settings.mysql_password
 
 
 app = FastAPI()
