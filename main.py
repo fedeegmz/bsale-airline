@@ -2,11 +2,8 @@
 from fastapi import FastAPI, Path
 from fastapi import HTTPException, status
 
-# MySQL
-import mysql.connector
-
-# security
-from security.config import settings
+# database
+from database.mysql_client import cursor
 
 # models
 from models.account_data import AccountData
@@ -23,11 +20,6 @@ from serializers.airplane import airplane_serializer
 from util import group_accounts, get_parents, get_near_seat
 from util import search_seat_by_id, search_seat_for_two_passengers, search_group_of_empty_seats
 from util import update_airplane, assign_seat_for_passenger, order_ready_accounts
-
-# load env
-db_host = settings.mysql_host
-db_username = settings.mysql_user
-db_password = settings.mysql_password
 
 
 app = FastAPI()
@@ -53,25 +45,6 @@ async def check_in(
             detail = {
                 "code": 400,
                 "errors": "incorrect flight id"
-            }
-        )
-    
-    try:
-        ### db connection ###
-        cnx = mysql.connector.connect(
-            host = db_host,
-            user = db_username,
-            password = db_password,
-            database = "airline"
-        )
-        cursor = cnx.cursor()
-
-    except:
-        raise HTTPException(
-            status_code = status.HTTP_400_BAD_REQUEST,
-            detail = {
-                "code": 400,
-                "errors": "could not connect to db"
             }
         )
 
@@ -251,8 +224,8 @@ async def check_in(
         print(f'ready: {len(flight_data.passengers)}')
         return ResponseModel(
             code = 200,
-            data = flight_data.dict()
-        ).dict()
+            data = flight_data.model_dump()
+        ).model_dump()
     
     except Exception as err:
         raise HTTPException(
