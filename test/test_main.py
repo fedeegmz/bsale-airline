@@ -18,7 +18,7 @@ from models.airplane_data import AirplaneData
 from serializers.airplane import airplane_serializer
 
 # util
-from util import search_seat_by_id, search_seat_by_col_and_row, get_next_to
+from util.util import search_seat_by_id, search_seat_by_col_and_row, get_next_to
 
 
 client = TestClient(app)

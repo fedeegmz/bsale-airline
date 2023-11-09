@@ -17,9 +17,9 @@ from serializers.flight import flight_serializer
 from serializers.airplane import airplane_serializer
 
 # util
-from util import group_accounts, get_parents, get_near_seat
-from util import search_seat_by_id, search_seat_for_two_passengers, search_group_of_empty_seats
-from util import update_airplane, assign_seat_for_passenger, order_ready_accounts
+from util.util import group_accounts, get_parents, get_near_seat
+from util.util import search_seat_by_id, search_seat_for_two_passengers, search_group_of_empty_seats
+from util.util import update_airplane, assign_seat_for_passenger, order_ready_accounts
 
 
 router = APIRouter()
