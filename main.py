@@ -14,4 +14,5 @@ app.include_router(check_in.router)
     include_in_schema = False
 )
 async def root():
-    return {"url": "https://checkinairline-1-s8126205.deta.app/flights/1/passengers"}
+    return {"msg": "API works"}
+    # return {"url": "https://checkinairline-1-s8126205.deta.app/flights/1/passengers"}
