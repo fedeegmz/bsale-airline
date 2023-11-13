@@ -1,12 +1,20 @@
 # FastAPI
 from fastapi import FastAPI
 
+# security
+from security.config import settings
+
 # routers
-from routers import check_in
+from routers.check_in import router
 
 
-app = FastAPI()
-app.include_router(check_in.router)
+app = FastAPI(
+    title = settings.app_name.title,
+    version = "0.1",
+    contact = {"admin": settings.admin_email},
+    summary = ""
+)
+app.include_router(router)
 
 
 @app.get(

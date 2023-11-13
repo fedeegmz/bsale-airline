@@ -3,7 +3,7 @@ from fastapi import APIRouter, Path
 from fastapi import HTTPException, status
 
 # database
-from database.mysql_client import cursor
+from database.mysql_client import conect_database
 
 # models
 from models.account_data import AccountData
@@ -22,11 +22,13 @@ from util.util import search_seat_by_id, search_seat_for_two_passengers, search_
 from util.util import update_airplane, assign_seat_for_passenger, order_ready_accounts
 
 
-router = APIRouter()
+router = APIRouter(
+    prefix = "/flights"
+)
 
 
 @router.get(
-    path = "/flights/{flight_id}/passengers",
+    path = "/{flight_id}/passengers",
     status_code = status.HTTP_200_OK,
     response_model = ResponseModel,
     summary = "Returns the check-in data",
@@ -43,6 +45,18 @@ async def check_in(
                 "errors": "incorrect flight id"
             }
         )
+    
+    ### DATABASE CURSOR ###
+    # try:
+    cursor = conect_database()
+    # except:
+    #     raise HTTPException(
+    #         status_code = status.HTTP_400_BAD_REQUEST,
+    #         detail = {
+    #             "code": 400,
+    #             "errors": "could not connect to db"
+    #         }
+    #     )
 
     try:
         # get FLIGHT DATA
