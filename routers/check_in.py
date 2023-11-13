@@ -48,7 +48,8 @@ async def check_in(
     
     ### DATABASE CURSOR ###
     # try:
-    cursor = conect_database()
+    # cursor = conect_database()
+    cursor = None
     # except:
     #     raise HTTPException(
     #         status_code = status.HTTP_400_BAD_REQUEST,

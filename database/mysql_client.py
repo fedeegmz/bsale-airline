@@ -23,13 +23,6 @@ def conect_database():
 
     return engine.connect()
 
-    # cnx = mysql.connector.connect(
-    #     host = db_host,
-    #     user = db_username,
-    #     password = db_password,
-    #     database = "airline"
-    # )
-    # return cnx.cursor()
 
 conn = conect_database()
 meta = MetaData()

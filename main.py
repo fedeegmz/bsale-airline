@@ -5,12 +5,12 @@ from fastapi import FastAPI
 from security.config import settings
 
 # routers
-from routers.check_in import router
+from routers.flights import router
 
 
 app = FastAPI(
-    title = settings.app_name.title,
-    version = "0.1",
+    title = settings.app_name.title(),
+    version = "0.2",
     contact = {"admin": settings.admin_email},
     summary = ""
 )
