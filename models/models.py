@@ -2,15 +2,6 @@
 from pydantic import BaseModel, Field
 
 
-
-class Flight(BaseModel):
-    flightId: int = Field(...)
-    takeoffDateTime: int = Field(...)
-    takeoffAirport: str = Field(...)
-    landingDateTime: int = Field(...)
-    landingAirport: str = Field(...)
-    airplaneId: int = Field(...) #FK -> Airplane
-
 class BoardingPass(BaseModel):
     boardingPassId: int = Field(...)
     purchaseId: int = Field(...) #FK -> Purchase
@@ -30,12 +21,6 @@ class Passenger(BaseModel):
     age: int = Field(...)
     country: str = Field(...)
 
-class Seat(BaseModel):
-    seatId: int = Field(...)
-    seatColumn: str = Field(...)
-    seatRow: str = Field(...)
-    seatTypeId: int = Field(...) #FK -> SeatType
-    airplaneId: int = Field(...) #FK -> Airplane
 
 class SeatType(BaseModel):
     seatTypeId: int = Field(...)

@@ -1,9 +1,6 @@
 # SQLAlchemy
 from sqlalchemy import MetaData, create_engine
 
-# MySQL
-# import mysql.connector
-
 # security
 from security.config import settings
 
@@ -15,7 +12,7 @@ def conect_database():
     db_port = settings.mysql_port
     db_username = settings.mysql_user
     db_password = settings.mysql_password
-    print(db_host, db_username, db_password)
+    print(f"Connect databse on '{db_host}:{db_port}'@'{db_username}'")
 
     engine = create_engine(
         f"mysql+pymysql://{db_username}:{db_password}@{db_host}:{db_port}/airline"
@@ -26,3 +23,12 @@ def conect_database():
 
 conn = conect_database()
 meta = MetaData()
+
+### Session ###
+# from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.orm import sessionmaker
+# Base = declarative_base()
+## Session into connect_database() ##
+# Base.metadata.create_all(bind=engine)
+# Session = sessionmaker(bind=engine)
+# return Session()

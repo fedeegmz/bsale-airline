@@ -10,7 +10,7 @@ from schemas.flight import flight
 
 # models
 from models.response.model import ResponseModel
-from models.models import Flight
+from models.flight_data import FlightData
 
 
 router = APIRouter(
@@ -38,4 +38,7 @@ async def check_in(
             }
         )
     
-    return list(conn.execute(flight.select().where(flight.c.flight_id == flight_id)).first())
+    result = conn.execute(flight.select().where(flight.c.flight_id == flight_id)).first()
+    flight_data = FlightData(*result)
+
+    return flight_data.model_dump(by_alias=True)
