@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from pydantic.alias_generators import to_camel
 
 # models
-from .account_data import AccountData
+from models.passenger_data import PassengerData
 
 
 class FlightData(BaseModel):
@@ -15,7 +15,7 @@ class FlightData(BaseModel):
     landing_date_time: int = Field(...)
     landing_airport: str = Field(...)
     airplane_id: int = Field(...)
-    passengers: list[AccountData] = Field(default = [])
+    passengers: list[PassengerData] = Field(default = [])
 
     def __init__(self, *args):
         assert len(args) >= 6

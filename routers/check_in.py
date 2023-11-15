@@ -6,10 +6,10 @@ from fastapi import HTTPException, status
 from database.mysql_client import conect_database
 
 # models
-from models.account_data import AccountData
+from models.passenger_data import PassengerData
 from models.flight_data import FlightData
 from models.airplane_data import AirplaneData
-from models.response.model import ResponseModel
+from models.response.flight_data import FlightDataResponse
 
 # serializers
 from serializers.accounts import accounts_serializer

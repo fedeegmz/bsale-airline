@@ -9,7 +9,7 @@ from database.mysql_client import conn
 from schemas.flight import flight
 
 # models
-from models.response.model import ResponseModel
+from models.response.flight_data import FlightDataResponse
 from models.flight_data import FlightData
 
 
@@ -22,7 +22,7 @@ router = APIRouter(
 @router.get(
     path = "/{flight_id}/passengers",
     status_code = status.HTTP_200_OK,
-    # response_model = ResponseModel,
+    # response_model = FlightDataResponse,
     summary = "Returns the check-in data",
     tags = ["check-in"]
 )

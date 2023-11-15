@@ -1,20 +1,20 @@
 # models
-from models.account_data import AccountData
+from models.passenger_data import PassengerData
 from models.seat_data import SeatData
 
 
-def group_accounts(accounts: list[AccountData]):
+def group_accounts(accounts: list[PassengerData]):
     """
     Agrupa los pasajeros que tiene asientos y los que no  
     - Param:  
-        - accounts: list[AccountData]  
+        - accounts: list[PassengerData]  
     - Return:  
-        - accounts_to_update: list[AccountData]  
-        - accounts_ready: list[AccountData]
+        - accounts_to_update: list[PassengerData]  
+        - accounts_ready: list[PassengerData]
     """
-    accounts_to_update: list[AccountData] = []
-    accounts_ready: list[AccountData] = []
-    children: list[AccountData] = []
+    accounts_to_update: list[PassengerData] = []
+    accounts_ready: list[PassengerData] = []
+    children: list[PassengerData] = []
     n = 0
     for account in accounts:
         if account.age < 18:
@@ -27,14 +27,14 @@ def group_accounts(accounts: list[AccountData]):
 
     return (accounts_to_update, accounts_ready, children)
 
-def get_parents(child: AccountData, accounts1: list[AccountData], accounts2: list[AccountData]):
+def get_parents(child: PassengerData, accounts1: list[PassengerData], accounts2: list[PassengerData]):
     """
     Busca pasajeros con igual purchaseId  
     - Param:  
-        - child: AccountData  
-        - accounts: list[AccountData]  
+        - child: PassengerData  
+        - accounts: list[PassengerData]  
     - Return:  
-        - list[AccountData]
+        - list[PassengerData]
     """
     list_to_return = []
     n = 0
@@ -208,8 +208,8 @@ def update_airplane(seat_id: int, airplane: list[SeatData]):
         n += 1
 
 def assign_seat_for_passenger(
-    passenger: AccountData,
-    passengers_list: list[AccountData],
+    passenger: PassengerData,
+    passengers_list: list[PassengerData],
     airplane: list[SeatData] = None,
     seat_id: int = None
 ):
@@ -218,8 +218,8 @@ def assign_seat_for_passenger(
     Si se recibe el parametro seat_id se le asigna al seatId del pasajero.
     Si se recibe el parametro airplane se actualizan los lugares vacios del avion.  
     - Param:
-        - passenger: AccountData  
-        - passengers_list: list[AccountData]  
+        - passenger: PassengerData  
+        - passengers_list: list[PassengerData]  
         - airplane: list[SeatData] = por defecto es None  
         - seat_id: int = por defecto es None
     """
@@ -309,13 +309,13 @@ def search_group_of_empty_seats(seat_type: int, airplane: list[SeatData]):
 
     return data
 
-def order_ready_accounts(accounts: list[AccountData]):
+def order_ready_accounts(accounts: list[PassengerData]):
     """
     Ordena los pasajeros por asiento.  
     - Param:  
-        - accounts: list[AccountData]  
+        - accounts: list[PassengerData]  
     - Return:  
-        - list[AccountData]
+        - list[PassengerData]
     """
     if len(accounts) > 1:
         half = len(accounts) // 2
