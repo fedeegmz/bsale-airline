@@ -30,9 +30,8 @@ class PassengerData(BaseModel):
             "country": args[4],
             "boardingPassId": args[5],
             "purchaseId": args[6],
-            "seatTypeId": args[7]
+            "seatTypeId": args[8],
+            "seatId": args[9]
         }
-        if len(args) == 9:
-            dict_args.update({"seatId": args[8]})
         
         super().__init__(**dict_args)

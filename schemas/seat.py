@@ -5,7 +5,7 @@ from sqlalchemy import Table, Column, Integer, String
 from database.mysql_client import meta
 
 
-seat = Table(
+SeatTable = Table(
     "seat", meta,
     Column("seat_id", Integer, primary_key=True),
     Column("seat_column", String(2)),

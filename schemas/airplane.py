@@ -5,7 +5,7 @@ from sqlalchemy import Table, Column, Integer, String
 from database.mysql_client import meta
 
 
-airplane = Table(
+AirplaneTable = Table(
     "airplane", meta,
     Column("airplane_id", Integer, primary_key=True),
     Column("name", String(255))
