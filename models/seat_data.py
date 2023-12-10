@@ -1,3 +1,6 @@
+# typing
+from typing import Optional
+
 # Pydantic
 from pydantic import BaseModel, Field, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -10,9 +13,10 @@ class SeatData(BaseModel):
     seat_column: str = Field(...)
     seat_row: int = Field(...)
     seat_type_id: int = Field(...)
+    passenger_id: Optional[int] = Field(default=None)
 
     def __init__(self, *args):
-        assert len(args) == 4
+        assert len(args) >= 4
 
         dict_args = {
             "seatId": args[0],

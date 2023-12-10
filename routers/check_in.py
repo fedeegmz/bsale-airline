@@ -3,18 +3,13 @@ from fastapi import APIRouter, Path
 from fastapi import HTTPException, status
 
 # database
-from database.mysql_client import conect_database
+from database.mysql_client import conn
 
 # models
 from models.passenger_data import PassengerData
 from models.flight_data import FlightData
 from models.airplane_data import AirplaneData
 from models.response.flight_data import FlightDataResponse
-
-# serializers
-from serializers.accounts import accounts_serializer
-from serializers.flight import flight_serializer
-from serializers.airplane import airplane_serializer
 
 # util
 from util.util import group_accounts, get_parents, get_near_seat
@@ -30,7 +25,7 @@ router = APIRouter(
 @router.get(
     path = "/{flight_id}/passengers",
     status_code = status.HTTP_200_OK,
-    response_model = ResponseModel,
+    response_model = FlightDataResponse,
     summary = "Returns the check-in data",
     tags = ["check-in"]
 )
@@ -46,25 +41,15 @@ async def check_in(
             }
         )
     
-    ### DATABASE CURSOR ###
-    # try:
-    # cursor = conect_database()
-    cursor = None
-    # except:
-    #     raise HTTPException(
-    #         status_code = status.HTTP_400_BAD_REQUEST,
-    #         detail = {
-    #             "code": 400,
-    #             "errors": "could not connect to db"
-    #         }
-    #     )
+    ##
+    cursor = conn
 
     try:
         # get FLIGHT DATA
         flight_data_query: str = f'SELECT * FROM flight WHERE flight_id = {flight_id}'
         cursor.execute(flight_data_query)
         flight_data = cursor.fetchone()
-        flight_data: FlightData = flight_serializer(flight_data)
+        flight_data = FlightData(*flight_data)
 
         # get AIRPLANE DATA (all seats - empty seats)
         airplane_data_query: str = f'SELECT s.seat_id, s.seat_column, s.seat_row, s.seat_type_id '\
@@ -80,8 +65,8 @@ async def check_in(
         airplane_data = cursor.fetchall()
         cursor.execute(airplane_empty_seats_query)
         airplane_empty_seats = cursor.fetchall()
-        airplane_data: AirplaneData = airplane_serializer(airplane_data)
-        airplane_empty_seats: AirplaneData = airplane_serializer(airplane_empty_seats)
+        airplane_data = AirplaneData(*airplane_data)
+        airplane_empty_seats = AirplaneData(*airplane_empty_seats)
 
         # get ACCOUNTS
         accounts_data_query: str = f'SELECT bp.boarding_pass_id, bp.purchase_id, bp.seat_type_id, bp.seat_id, '\
@@ -101,16 +86,16 @@ async def check_in(
                                     f'ORDER BY q.quantity DESC, bp.purchase_id;'
         cursor.execute(accounts_data_query)
         accounts_data = cursor.fetchall() # accounts ordenadas por cantidad de compra
-        accounts_data: list[AccountData] = [AccountData(**accounts_serializer(account)) for account in accounts_data]
+        accounts_data = [PassengerData(*account) for account in accounts_data]
 
-        parents: list[AccountData]
+        parents: list[PassengerData]
         accounts_to_update, accounts_ready, children = group_accounts(accounts_data)
         print(f'accounts: {len(children) + len(accounts_ready) + len(accounts_to_update)}')
 
         # seat children and parents
         # TODO: si es posible, asignar asientos todos en la misma fila
         for child in children:
-            parents: list[AccountData] = get_parents(child, accounts_to_update, accounts_ready)
+            parents: list[PassengerData] = get_parents(child, accounts_to_update, accounts_ready)
 
             if len(children) != 0 and not parents:
                 raise HTTPException(
@@ -174,8 +159,8 @@ async def check_in(
             )
         
         # seat people group by purchaseId
-        group_accounts_by_purchase_id: list[list[AccountData]] = [] # lista con listas de cuentas agrupadas por purchaseId
-        accounts_group: list[AccountData] = []
+        group_accounts_by_purchase_id: list[list[PassengerData]] = [] # lista con listas de cuentas agrupadas por purchaseId
+        accounts_group: list[PassengerData] = []
         m = 0
         for account in accounts_to_update:
             
@@ -233,10 +218,10 @@ async def check_in(
 
         flight_data.passengers = order_ready_accounts(accounts_ready)
         print(f'ready: {len(flight_data.passengers)}')
-        return ResponseModel(
+        return FlightDataResponse(
             code = 200,
-            data = flight_data.model_dump()
-        ).model_dump()
+            data = flight_data
+        ).model_dump(by_alias=True)
     
     except Exception as err:
         raise HTTPException(

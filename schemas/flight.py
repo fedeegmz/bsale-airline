@@ -8,7 +8,7 @@ from database.mysql_client import meta
 
 # Base = declarative_base()
 
-flight = Table(
+FlightTable = Table(
     "flight", meta,
     Column("flight_id", Integer, primary_key=True),
     Column("takeoff_date_time", Integer),

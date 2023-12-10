@@ -1,3 +1,5 @@
+# FastAPI
+from fastapi import HTTPException, status
 # SQLAlchemy
 from sqlalchemy import MetaData, create_engine
 
@@ -14,9 +16,18 @@ def conect_database():
     db_password = settings.mysql_password
     print(f"Connect databse on '{db_host}:{db_port}'@'{db_username}'")
 
-    engine = create_engine(
-        f"mysql+pymysql://{db_username}:{db_password}@{db_host}:{db_port}/airline"
-    )
+    try:
+        engine = create_engine(
+            f"mysql+pymysql://{db_username}:{db_password}@{db_host}:{db_port}/airline"
+        )
+    except:
+        raise HTTPException(
+            status_code = status.HTTP_400_BAD_REQUEST,
+            detail = {
+                "code": 400,
+                "errors": "could not connect to db"
+            }
+        )
 
     return engine.connect()
 

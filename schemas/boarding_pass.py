@@ -5,7 +5,7 @@ from sqlalchemy import Table, Column, Integer
 from database.mysql_client import meta
 
 
-boarding_pass = Table(
+BoardingPassTable = Table(
     "boarding_pass", meta,
     Column("boarding_pass_id", Integer, primary_key=True),
     Column("purchase_id", Integer),
