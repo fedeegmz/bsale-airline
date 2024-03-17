@@ -59,17 +59,20 @@ El endpoint check_in cuenta con varios tests escritos también en Python (**PyTe
 ### Docs
 <!-- La documentación (**Swagger**) se encuentra en ["/docs"](https://checkinairline-1-s8126205.deta.app/docs).   -->
 La documentación (**Swagger**) se encuentra en la ruta "/docs"
-## Ejecutar en local
+## Local
 Una vez clonado el repositorio, es necesario instalar los requerimientos. Antes de eso hay que **descomentar** las líneas en el archivo requirements.txt.  
 Para instalar las dependencias ejecutar ```pip install requirements.txt```  
 También es necesario crear un archivo .env en la ruta "./", este debe contener las sigueintes variables de entorno, con sus respectivos valores para acceder a la DB:
-- MYSQL_USER="username"
-- MYSQL_PASSWORD="password"
-- MYSQL_HOST="host"
-### Servidor
+    ```env
+    MYSQL_HOST="localhost"
+    MYSQL_PORT="3306"
+    MYSQL_USER="username"
+    MYSQL_PASSWORD="password"
+    ```
+### Server
 Comando para iniciar el servidor ```uvicorn main:app --reload```  
 ### Testing
 Comando para ejecutar los tests ```pytest```  
-# A mejorar
+# Issues
 - Para los pasajeros que viajan de a dos (es decir, cuando solo hay dos pasajeros con el mismo purchaseId) sentarlos al lado.
 - Si un pasajero viaja solo (es decir, no hay otro pasajero con el mismo purchaseId) que su asiento no tenga un asiento disponible al lado; para optimizar el espacio.

@@ -80,7 +80,8 @@ async def check_in(
         ).where(
             SeatTable.c.airplane_id == flight_data.airplane_id
         ).order_by(
-            SeatTable.c.seat_id
+            SeatTable.c.seat_column,
+            SeatTable.c.seat_row
         )
     ).all()
     airplane = AirplaneData(
@@ -157,16 +158,19 @@ async def check_in(
             
             else: #--> first_passenger.seat_id is None
                 new_passenger_data = first_passenger.model_copy()
-                new_passenger_data.seat_id = airplane.search_group_of_available_seats(
-                    first_passenger.seat_type_id,
-                    grouped_passengers_queue.size()
+                available_seat = airplane.search_group_of_available_seats(
+                    seat_type = new_passenger_data.seat_type_id,
+                    quantity = grouped_passengers_queue.size()
                 )
+                assert available_seat
+                new_passenger_data.seat_id = available_seat.seat_id
+                print(new_passenger_data)
                 grouped_passengers_queue.head.set_data(
                     new_passenger_data
                 )
                 airplane.update_passenger_id(
-                    first_passenger.seat_id,
-                    first_passenger.passenger_id
+                    new_passenger_data.seat_id,
+                    new_passenger_data.passenger_id
                 )
                 counter += 1 # UPDATE COUNTER
             
