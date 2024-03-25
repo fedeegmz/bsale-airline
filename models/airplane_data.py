@@ -54,7 +54,7 @@ class AirplaneData(BaseModel):
                 return seat
         return None
 
-    def search_to_right_or_left( #
+    def search_to_right_or_left(
         self,
         seat: SeatData,
         k: int
@@ -82,12 +82,20 @@ class AirplaneData(BaseModel):
         
         return data
 
-    def search_group_of_available_seats( #
+    def search_group_of_available_seats(
         self,
         seat_type: int,
         quantity: int = 1
         # near_to: Optional[SeatData] = None
     ) -> Optional[SeatData]:
+        """
+        Retorna un asiento que tenga cerca asientos disponibles segun la cantidad especificada.
+        - Params:
+            - seat_type [int]
+            - quantity [int]
+        - Return:
+            - list[int]
+        """
         assert quantity >= 1
 
         data = []
@@ -119,7 +127,7 @@ class AirplaneData(BaseModel):
                     )
             
             if len(data) >= quantity:
-                print(f"Found group of {len(data)} available seats")
+                # print(f"Found group of {len(data)} available seats")
                 return seat
             data = []
         return None
