@@ -160,38 +160,3 @@ class Queue():
         """
         for data in self.iter():
             print(data)
-
-
-# class Queue:
-    
-#     def __init__(
-#         self,
-#         data: list = []
-#     ) -> None:
-#         self.items = data
-#         self.__size__ = len(self.items)
-    
-#     def enqueue(self, data) -> None:
-#         self.items.insert(0, data)
-#         self.__size__ += 1
-    
-#     def dequeue(self):
-#         data = self.items.pop()
-#         self.__size__ -= 1
-#         return data
-    
-#     def size(self) -> int:
-#         return self.__size__
-    
-#     def iter(self):
-#         index = 0
-#         current = self.items[index]
-#         while index < self.__size__:
-#             index += 1
-#             value = current
-#             current = self.items[index]
-#             yield value
-    
-#     def clear(self) -> None:
-#         self.items.clear()
-#         self.__size__ = len(self.items)

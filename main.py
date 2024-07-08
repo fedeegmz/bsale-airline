@@ -22,5 +22,10 @@ app.include_router(router)
     include_in_schema = False
 )
 async def root():
-    return {"msg": "API works"}
-    # return {"url": "https://checkinairline-1-s8126205.deta.app/flights/1/passengers"}
+    return {
+        "msg": "Welcome to Bsale Airline API"
+    }
+    # return {
+    #     "url":
+    #     "https://checkinairline-1-s8126205.deta.app/flights/1/passengers"
+    # }

@@ -1,8 +1,8 @@
-# Typing
-from typing import Optional
-
 # Pydantic
-from pydantic import BaseModel, Field
+from pydantic import (
+    BaseModel,
+    Field
+)
 
 # models
 from models.seat_data import SeatData
@@ -11,19 +11,11 @@ from models.passenger_data import PassengerData
 
 class AirplaneData(BaseModel):
     seats: list[SeatData] = Field(...)
-    cols: Optional[list[tuple[str]]] = Field(default=None)
-    rows: Optional[list[tuple[int]]] = Field(default=None)
-
-    def __init__(self, **kargs):
-        super().__init__(**kargs)
-        self.cols = self.__columns__()
-        self.rows = self.__rows__()
-
 
     def search_seat_by_id(
         self,
         seat_id: int
-    ) -> Optional[SeatData]:
+    ) -> SeatData | None:
         """
         Busca un asiento por ID, si no existe ese ID retorna None.
         - Param:
@@ -40,7 +32,7 @@ class AirplaneData(BaseModel):
         self,
         col: str,
         row: int
-    ) -> Optional[SeatData]:
+    ) -> SeatData | None:
         """
         Busca un asiento por su numero de fila y su columna, si no existe retorna None.
         - Params:
@@ -50,7 +42,10 @@ class AirplaneData(BaseModel):
             - SeatData or None
         """
         for seat in self.seats:
-            if seat.seat_column == col and seat.seat_row == row:
+            if (
+                seat.seat_column == col
+                and seat.seat_row == row
+            ):
                 return seat
         return None
 
@@ -86,8 +81,7 @@ class AirplaneData(BaseModel):
         self,
         seat_type: int,
         quantity: int = 1
-        # near_to: Optional[SeatData] = None
-    ) -> Optional[SeatData]:
+    ) -> SeatData | None:
         """
         Retorna un asiento que tenga cerca asientos disponibles segun la cantidad especificada.
         - Params:
@@ -112,10 +106,20 @@ class AirplaneData(BaseModel):
                     seat.seat_column,
                     seat.seat_row + 1
                 )
-                while back_seat and back_seat.seat_type_id == seat_type and not back_seat.passenger_id:
+                while (
+                    back_seat
+                    and back_seat.seat_type_id == seat_type
+                    and not back_seat.passenger_id
+                ):
                     data.append(back_seat.seat_id)
-                    left_seats = self.search_to_right_or_left(back_seat, -1)
-                    right_seats = self.search_to_right_or_left(back_seat, 1)
+                    left_seats = self.search_to_right_or_left(
+                        back_seat,
+                        -1
+                    )
+                    right_seats = self.search_to_right_or_left(
+                        back_seat,
+                        1
+                    )
                     if len(left_seats) + len(right_seats) == 0:
                         break
                     data += left_seats
@@ -152,13 +156,17 @@ class AirplaneData(BaseModel):
         if not seat_1 or not seat_2:
             return False
         
-        if (abs(ord(seat_1.seat_column) - ord(seat_2.seat_column)) == 1) and seat_1.seat_row == seat_2.seat_row:
+        if (
+            (abs(ord(seat_1.seat_column) - ord(seat_2.seat_column)) == 1)
+            and seat_1.seat_row == seat_2.seat_row
+        ):
             return True
         return False
     
     def get_left_right_seats(
         self,
-        seat_id: int
+        seat_id: int,
+        empty_seat: bool = True
     ) -> tuple:
         """
         Retorna (si existen y no estan ocupados) los asientos 
@@ -174,14 +182,22 @@ class AirplaneData(BaseModel):
             chr(ord(seat.seat_column) - 1),
             seat.seat_row
         )
-        if next_left_seat and next_left_seat.passenger_id:
+        if (
+            empty_seat
+            and next_left_seat
+            and next_left_seat.passenger_id
+        ):
             next_left_seat = None
 
         next_right_seat = self.search_seat_by_col_and_row(
             chr(ord(seat.seat_column) + 1),
             seat.seat_row
         )
-        if next_right_seat and next_right_seat.passenger_id:
+        if (
+            empty_seat
+            and next_right_seat
+            and next_right_seat.passenger_id
+        ):
             next_right_seat = None
         
         return (next_left_seat, next_right_seat)
@@ -189,7 +205,7 @@ class AirplaneData(BaseModel):
     def get_near_seat(
         self,
         seat_id: int
-    ) -> Optional[SeatData]:
+    ) -> SeatData | None:
         """
         Retorna un asiento que se encuentre cerca y no tenga pasajero, 
         empezando por los asientos de la misma columna, 
@@ -208,12 +224,26 @@ class AirplaneData(BaseModel):
         seat = self.search_seat_by_id(seat_id)
         assert seat
         
-        near_seat = self.search_seat_by_col_and_row(seat.seat_column, seat.seat_row - 1)
-        if near_seat and not near_seat.passenger_id and seat.seat_type_id == near_seat.seat_type_id:
+        near_seat = self.search_seat_by_col_and_row(
+            seat.seat_column,
+            seat.seat_row - 1
+        )
+        if (
+            near_seat
+            and not near_seat.passenger_id
+            and seat.seat_type_id == near_seat.seat_type_id
+        ):
             return near_seat
         
-        near_seat = self.search_seat_by_col_and_row(seat.seat_column, seat.seat_row + 1)
-        if near_seat and not near_seat.passenger_id and seat.seat_type_id == near_seat.seat_type_id:
+        near_seat = self.search_seat_by_col_and_row(
+            seat.seat_column,
+            seat.seat_row + 1
+        )
+        if (
+            near_seat
+            and not near_seat.passenger_id
+            and seat.seat_type_id == near_seat.seat_type_id
+        ):
             return near_seat
         
         return None
@@ -254,36 +284,3 @@ class AirplaneData(BaseModel):
         except:
             return False
         return True
-    
-
-    def __columns__(self):
-        list_to_return = []
-        list_of_cols = list(set([seat.seat_column for seat in self.seats]))
-        list_of_cols.sort()
-        
-        list_to_tuple = []
-        for item in list_of_cols:
-            if len(list_to_tuple) == 0 or abs(ord(item) - ord(list_to_tuple[-1])) == 1:
-                list_to_tuple.append(item)
-            else:
-                list_to_return.append(tuple(list_to_tuple.copy()))
-                list_to_tuple.clear()
-                list_to_tuple.append(item)
-        list_to_return.append(tuple(list_to_tuple.copy()))
-        return list_to_return
-
-    def __rows__(self):
-        list_to_return = []
-        list_of_rows = list(set([seat.seat_row for seat in self.seats]))
-        list_of_rows.sort()
-
-        list_to_tuple = []
-        for item in list_of_rows:
-            if len(list_to_tuple) == 0 or abs(item - list_to_tuple[-1]) == 1:
-                list_to_tuple.append(item)
-            else:
-                list_to_return.append(tuple(list_to_tuple.copy()))
-                list_to_tuple.clear()
-                list_to_tuple.append(item)
-        list_to_return.append(tuple(list_to_tuple.copy()))
-        return list_to_return

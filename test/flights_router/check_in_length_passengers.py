@@ -1,48 +1,32 @@
-# Python
-import os
-
 # FastAPI
 from fastapi.testclient import TestClient
-
-# MySQL
-import mysql.connector
 
 # main
 from main import app
 
-# models
-from models.seat_data import SeatData
-from models.airplane_data import AirplaneData
+# utils
+from utils.get_passengers_data import get_passengers_data
 
 
 client = TestClient(app)
 
 
 class TestCheckInLengthPassengers:
-    def test_length_passengers_for_flight_id_1(self):
-        response = client.get("/flights/1/passengers")
+    def check_data_for_tests(self, flight_id: int):
+        response = client.get(f"/flights/{flight_id}/passengers")
         data = response.json().get("data")
-        accounts = get_accounts(1)
+        passengers = get_passengers_data(flight_id)
 
-        assert len(accounts) == len(data.get("passengers"))
+        assert len(passengers) == len(data.get("passengers"))
+    
+    def test_length_passengers_for_flight_id_1(self):
+        self.check_data_for_tests(1)
 
     def test_length_passengers_for_flight_id_2(self):
-        response = client.get("/flights/2/passengers")
-        data = response.json().get("data")
-        accounts = get_accounts(2)
-
-        assert len(accounts) == len(data.get("passengers"))
+        self.check_data_for_tests(2)
 
     def test_length_passengers_for_flight_id_3(self):
-        response = client.get("/flights/3/passengers")
-        data = response.json().get("data")
-        accounts = get_accounts(3)
-
-        assert len(accounts) == len(data.get("passengers"))
+        self.check_data_for_tests(3)
 
     def test_length_passengers_for_flight_id_4(self):
-        response = client.get("/flights/4/passengers")
-        data = response.json().get("data")
-        accounts = get_accounts(4)
-
-        assert len(accounts) == len(data.get("passengers"))
+        self.check_data_for_tests(4)

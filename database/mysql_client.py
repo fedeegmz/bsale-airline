@@ -1,7 +1,14 @@
 # FastAPI
-from fastapi import HTTPException, status
+from fastapi import (
+    HTTPException,
+    status
+)
+
 # SQLAlchemy
-from sqlalchemy import MetaData, create_engine
+from sqlalchemy import (
+    MetaData,
+    create_engine
+)
 
 # security
 from security.config import settings
@@ -34,12 +41,3 @@ def conect_database():
 
 conn = conect_database()
 meta = MetaData()
-
-### Session ###
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import sessionmaker
-# Base = declarative_base()
-## Session into connect_database() ##
-# Base.metadata.create_all(bind=engine)
-# Session = sessionmaker(bind=engine)
-# return Session()

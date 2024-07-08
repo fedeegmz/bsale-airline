@@ -1,5 +1,8 @@
 # Pydantic
-from pydantic import BaseModel, Field
+from pydantic import (
+    BaseModel,
+    Field
+)
 
 # models
 from models.flight_data import FlightData
